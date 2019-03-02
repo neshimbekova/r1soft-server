@@ -1,0 +1,38 @@
+---
+- name: Installs R1soft agent
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Create repo
+      copy:
+        src: r1soft.repo
+        dest: /etc/yum.repos.d
+      ignore_errors: true
+
+    - name:
+      package:
+        name: serverbackup-enterprise-agent
+        state: installed
+      ignore_errors: true
+
+    - name: start agent
+      systemd:
+        name: sbm-agent
+        state: restarted
+      ignore_errors: true
+
+
+
+
+    - name: stop firewall
+      systemd:
+        name: firewalld
+        state: stopped
+      ignore_errors: true
+
+
+
+    - name: Get key
+      shell: "r1soft-setup --get-key http://34.244.11.71:8080/"
+      ignore_errors: true
